@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jubotech.business.web.dao.WxMessageDao">
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
+ 
+    <resultMap type="com.jubotech.business.web.domain.WxMessageInfo" id="resultMap">
+        <id column="id" property="id"/>
+        <result  column="cid" property="cid"/>
+        <result  column="wechatId" property="wechatId"/>
+        <result  column="friendId" property="friendId"/>
+        <result  column="msgSvrId" property="msgSvrId"/>
+        <result  column="isSend" property="isSend"/>
+        <result  column="contentType" property="contentType"/>
+        <result  column="content" property="content"/>
+        <result  column="type" property="type"/>
+        <result  column="create_time" property="create_time"/>
+    </resultMap>
+     
+     
+    <select id="queryWeChatMessageInfo" resultMap="resultMap">
+         select * 
+         from tbl_wx_message
+         where  1=1
+         <if test="cid != null">
+           and cid = #{cid}
+         </if>
+         <if test="wechatid != null and wechatid != '' ">
+           and wechatid = #{wechatid}
+         </if>
+         <if test="friendid != null and friendid != '' ">
+           and friendid = #{friendid}
+         </if>
+          order by create_time desc  
+         <if test="page!= null ">
+			<if test="page.limit != null">
+				LIMIT #{page.limit}
+			</if>
+			<if test="page.offset != null">
+				OFFSET #{page.offset}
+			</if>
+		 </if>
+	</select>
+	
+	<select id="queryWeChatMessageInfoCount" resultType="java.lang.Integer">
+         select  count(1) 
+         from tbl_wx_message
+         where 1=1
+         <if test="cid != null">
+           and cid = #{cid}
+         </if>
+         <if test="wechatid != null and wechatid != '' ">
+           and wechatid = #{wechatid}
+         </if>
+         <if test="friendid != null and friendid != '' ">
+           and friendid = #{friendid}
+         </if>
+	</select> 
+    
+    <select id="queryHistormMessageCount" resultType="java.lang.Integer">
+         select  count(1) 
+         from tbl_wx_message
+         where 1=1
+         <if test="cid != null">
+           and cid = #{cid}
+         </if>
+         <if test="wechatId != null and wechatId != '' ">
+           and wechatid = #{wechatId}
+         </if>
+         <if test="startTime != null  ">
+           and  UNIX_TIMESTAMP(create_time) &gt;= UNIX_TIMESTAMP(#{startTime})
+         </if>
+	</select> 
+	
+	
+	<select id="queryHistormMessage" resultMap="resultMap">
+         select * 
+         from tbl_wx_message
+         where  1=1
+         <if test="info.cid != null">
+           and cid = #{info.cid}
+         </if>
+         <if test="info.wechatId != null and info.wechatId != '' ">
+           and wechatid = #{info.wechatId}
+         </if>
+         <if test="info.startTime != null ">
+           and  UNIX_TIMESTAMP(create_time) &gt;= UNIX_TIMESTAMP(#{info.startTime})
+         </if>
+          order by create_time asc  
+		 <if test="page!= null ">
+			<if test="page.limit != null">
+				LIMIT #{page.limit}
+			</if>
+			<if test="page.offset != null">
+				OFFSET #{page.offset}
+			</if>
+		 </if>
+	</select>
+	
+    <select id="queryWeChatMessageInfoByMsgServerId" resultType="com.jubotech.business.web.domain.WxMessageInfo">
+         select * 
+         from tbl_wx_message
+         where  1=1
+         <if test="msgSvrId != null and msgSvrId != '' ">
+           and msgSvrId = #{msgSvrId}
+         </if> 
+         <if test="wechatid != null and wechatid != '' ">
+           and wechatid = #{wechatid}
+         </if>
+         <if test="friendid != null and friendid != '' ">
+           and friendid = #{friendid}
+         </if>
+	</select> 
+	
+	<update id="update">
+	   update  tbl_wx_message
+        set  msgSvrId = #{msgSvrId} 
+        where  id = #{id}
+	</update>
+	
+	<update id="updateContent">
+	   update  tbl_wx_message
+        set  content = #{content} 
+        where  id = #{id}
+	</update>
+    
+    
+	<insert id="insert"  useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+		  insert into tbl_wx_message(cid,wechatId,friendId,msgSvrId,isSend,contentType,content,type,create_time)
+		  values(#{cid},#{wechatId},#{friendId},#{msgSvrId},#{isSend},#{contentType},#{content},#{type},now()); 
+		]]>
+	</insert>   
+	
+ 
+	
+	<update id="delete">
+	   delete from   tbl_wx_message   where  id = #{id}
+	</update>
+	
+   
+
+</mapper>

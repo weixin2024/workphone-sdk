@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jubotech.business.web.dao.WxContactDao">
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
+ 
+    <resultMap type="com.jubotech.business.web.domain.WxContactInfo" id="resultMap">
+        <id column="id" property="id"/>
+        <result  column="cid" property="cid"/>
+        <result  column="wechatid" property="wechatid"/>
+        <result  column="friendid" property="friendid"/>
+        <result  column="friend_wechatno" property="friend_wechatno"/>
+        <result  column="nickname" property="nickname"/>
+        <result  column="remark" property="remark"/>
+        <result  column="gender" property="gender"/>
+        <result  column="avatar" property="avatar"/>
+        <result  column="country" property="country"/>
+        <result  column="province" property="province"/>
+        <result  column="city" property="city"/>
+        <result  column="type" property="type"/>
+        <result  column="modify_time" property="modify_time"/>
+        <result  column="create_time" property="create_time"/>
+    </resultMap>
+     
+    <select id="findContactinfoByid" resultType="com.jubotech.business.web.domain.WxContactInfo">
+         select *  from tbl_wx_contactinfo    where   id = #{id}
+	</select>
+	
+	 
+	
+	<select id="findContactinfoByfriendid" resultType="com.jubotech.business.web.domain.WxContactInfo">
+         select *  from tbl_wx_contactinfo  
+          where  cid = #{cid} 
+          and  wechatid = #{wechatid} 
+          and   friendid = #{friendid} limit 1;
+	</select>
+	
+	<select id="findContactinfoByWechatidFriendid" resultType="com.jubotech.business.web.domain.WxContactInfo">
+         select *  from tbl_wx_contactinfo  
+          where wechatid = #{wechatid} 
+          and   friendid = #{friendid} limit 1;
+	</select> 
+     
+	<select id="findContactinfoByWeChatId" resultMap="resultMap">
+         select * 
+         from tbl_wx_contactinfo
+         where state = 0 and cid = #{cid} and  wechatid = #{wechatid}
+	</select>
+	 
+  
+	 
+	<insert id="insert"  useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+		  insert into tbl_wx_contactinfo(cid,wechatid,friendid,friend_wechatno,nickname,remark,gender,avatar,country,province,city,type,create_time)
+		  values(#{cid},#{wechatid},#{friendid},#{friend_wechatno},#{nickname},#{remark},#{gender},#{avatar},#{country},#{province},#{city},#{type},now()); 
+		]]>
+	</insert>   
+	
+	<update id="update">
+	  update  tbl_wx_contactinfo
+      set 
+      friend_wechatno = #{friend_wechatno},
+      nickname = #{nickname},
+      remark = #{remark},
+      gender = #{gender},
+      avatar = #{avatar},
+      country = #{country},
+      province = #{province},
+      city = #{city},
+      modify_time = now()
+	  where 
+	  id = #{id} 
+	</update>
+	
+	<update id="delete">
+	   delete from   tbl_wx_contactinfo   where  id = #{id}
+	</update>
+	 
+</mapper>

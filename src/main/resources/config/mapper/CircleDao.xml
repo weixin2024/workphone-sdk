@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jubotech.business.web.dao.CircleDao">
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
+    
+    <resultMap type="com.jubotech.business.web.domain.CircleInfo" id="resultMap">
+        <id column="id" property="id"/>
+        <result  column="sourcewechatid" property="sourcewechatid"/>
+        <result  column="wechatid" property="wechatid"/>
+        <result  column="wechatnickname" property="wechatnickname"/>
+        <result  column="circleid" property="circleid"/>
+        <result  column="content" property="content"/>
+        <result  column="publishtime" property="publishtime"/>
+        <result  column="thumbimages" property="thumbimages"/>
+        <result  column="images" property="images"/>
+        <result  column="link" property="link"/>
+        <result  column="videothumbimg" property="videothumbimg"/>
+        <result  column="videourl" property="videourl"/>
+        <result  column="videodescription" property="videodescription"/>
+        <result  column="videomediaid" property="videomediaid"/>
+        <result  column="create_time" property="createTime"/>
+    </resultMap>
+     
+    <select id="queryCircleInfoByInserttime" resultMap="resultMap">
+         select * from  tbl_wx_circleinfo  
+         where ((images is null  and  thumbimages !='') or (videourl is null and  videothumbimg!='' ) ) 
+         and create_time > #{dat}
+	</select>
+	
+	<select id="findCircleInfoByWeChatIdCircleId" resultType="com.jubotech.business.web.domain.CircleInfo">
+         select * from  tbl_wx_circleinfo  
+         where  wechatid = #{wechatid} and circleid = #{circleid}  limit 1
+	</select>
+	
+	
+	  
+	<insert id="insert">
+	  insert into tbl_wx_circleinfo(sourcewechatid,wechatid,wechatnickname,circleid,content,publishtime,thumbimages,images,link,videothumbimg,videourl,videodescription,videomediaid,create_time)
+	  values(#{sourcewechatid},#{wechatid},#{wechatnickname},#{circleid},#{content},#{publishtime},#{thumbimages},#{images},#{link},#{videothumbimg},#{videourl},#{videodescription},#{videomediaid},now()) 
+	</insert>   
+	 
+	  
+	<update id="update">
+	  update  tbl_wx_circleinfo
+      set 
+      images = #{images},
+      videourl = #{videourl}
+	  where 
+	  id = #{id} 
+	</update>
+	 
+</mapper>

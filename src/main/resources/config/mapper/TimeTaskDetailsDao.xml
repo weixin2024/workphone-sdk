@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jubotech.business.web.dao.TimeTaskDetailsDao">
+    
+    <resultMap type="com.jubotech.business.web.domain.TimeTaskDetails" id="resultMap">
+        <id column="id" property="id"/>
+        <result  column="tid" property="tid"/>
+        <result  column="json_content" property="json_content"/>
+        <result  column="execute_time" property="execute_time"/>
+        <result  column="results" property="results"/>
+        <result  column="create_time" property="create_time"/>
+    </resultMap>
+      
+	  
+	<select id="findTimeTaskDetailsByid" resultType="com.jubotech.business.web.domain.TimeTaskDetails">
+         select  * 
+         from tbl_timetask_details
+         where  id = #{id}
+	</select>
+	 
+  
+	<insert id="insert"  useGeneratedKeys="true" keyProperty="id" >
+	  insert into tbl_timetask_details(tid,json_content,execute_time,results,create_time)
+	  values(#{tid},#{json_content},#{execute_time},#{results},now()) 
+	</insert>  
+	
+	<update id="updateJsonContent">
+	  update  tbl_timetask_details
+      set 
+      json_content = #{json_content}
+	  where 
+	  id = #{id} 
+	</update> 
+	
+	<update id="updateResults">
+	  update  tbl_timetask_details
+      set 
+      results = #{results}
+	  where 
+	  id = #{id} 
+	</update> 
+	
+	
+	<update id="updateState">
+	  update  tbl_timetask_details
+      set 
+      state = #{state}
+	  where 
+	  id = #{id} 
+	</update> 
+	
+	 
+	<delete id="deleteByTid">
+	   delete from  tbl_timetask_details where  tid = #{tid}
+	</delete>
+	  
+	<select id="findTimeTaskDetailsByTid" resultMap="resultMap" >
+         select  * 
+         from tbl_timetask_details
+         where state = 1 and  tid = #{tid}
+	</select>
+	  
+
+</mapper>

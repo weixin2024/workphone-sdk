@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jubotech.business.web.dao.WxAccountDao">
+
+    <resultMap type="com.jubotech.business.web.domain.WxAccountInfo" id="resultMap">
+        <id column="id" property="id"/>
+        <result  column="wechatid" property="wechatid"/>
+        <result  column="wechatno" property="wechatno"/>
+        <result  column="wechatnick" property="wechatnick"/>
+        <result  column="gender" property="gender"/>
+        <result  column="avatar" property="avatar"/>
+        <result  column="country" property="country"/>
+        <result  column="province" property="province"/>
+        <result  column="city" property="city"/>
+        <result  column="isonline" property="isonline"/>
+        <result  column="deviceid" property="deviceid"/>
+        <result  column="cid" property="cid"/>
+        <result  column="accountid" property="accountid"/>
+        <result  column="account" property="account"/>
+        <result  column="login_time" property="login_time"/>
+        <result  column="modify_time" property="modify_time"/>
+    </resultMap>
+       
+	<select id="findWeChatAccountInfoByid" resultType="com.jubotech.business.web.domain.WxAccountInfo">
+         select  * 
+         from tbl_wx_accountinfo
+         where  id = #{id}
+	</select>
+	
+	<select id="findWeChatAccountInfoByDeviceid" resultType="com.jubotech.business.web.domain.WxAccountInfo">
+         select  * 
+         from tbl_wx_accountinfo
+         where  deviceid = #{deviceid}
+	</select>
+	
+	<select id="findWeChatAccountInfoByWeChatId" resultType="com.jubotech.business.web.domain.WxAccountInfo">
+         select  * 
+         from tbl_wx_accountinfo
+         where  wechatid = #{wechatid}
+	</select>
+	
+	
+    <select id="findAllIsLoginAccountWechatInfo" resultMap="resultMap">
+         select  t1.account,t2.* from tbl_accountinfo t1,tbl_wx_accountinfo t2
+         where  t1.id = t2.accountid and t2.islogined !=1
+	</select>
+	
+	
+	<select id="findAccountWechatInfoByCid" resultMap="resultMap">
+         select  * from tbl_wx_accountinfo  where isonline='0' and cid = #{cid}  
+	</select>
+	 
+	
+	<select id="findWeChatAccountInfo" resultMap="resultMap">
+         select  t1.*
+         from tbl_wx_accountinfo t1
+         where   1=1 
+         <if test="cid != null and cid !='' ">
+           and  t1.cid = #{cid} 
+         </if>
+         <if test="accountid != null and accountid !='' ">
+           and t1.accountid =#{accountid}
+         </if>
+	</select>
+	
+	
+	<select id="findWeChatAccountInfoByWeChatIdNotEqualsDeviceid" resultMap="resultMap">
+         select  * 
+         from tbl_wx_accountinfo
+         where   1=1 
+         <if test="wechatid != null and wechatid !='' ">
+           and  wechatid = #{wechatid} 
+         </if>
+         <if test="deviceid != null and deviceid !='' ">
+           and deviceid !=#{deviceid}
+         </if>
+	</select>
+	
+	<select id="findAllWeChatAccountInfo" resultType="com.jubotech.business.web.domain.WxAccountInfo">
+         select  * 
+         from tbl_wx_accountinfo
+         where  isonline = #{isonline}
+	</select>
+	
+	<delete id="delete">
+	   delete from  tbl_wx_accountinfo where  id = #{id}
+	</delete>
+	  
+	<update id="update">
+	  update  tbl_wx_accountinfo
+      set 
+      wechatid = #{wechatid},
+      wechatno = #{wechatno},
+      wechatnick = #{wechatnick},
+      gender = #{gender},
+      avatar = #{avatar},
+      country = #{country},
+      province = #{province},
+      city = #{city},
+      modify_time = now()
+	  where 
+	  id = #{id} 
+	</update>
+	
+	<update id="updateLogined">
+	  update  tbl_wx_accountinfo
+      set 
+      islogined = #{islogined},
+      accountid = #{accountid},
+      login_time =now()
+	  where 
+	  id = #{id} 
+	</update>
+	
+	<update id="updateOnline">
+	  update  tbl_wx_accountinfo
+      set 
+      isonline = #{isonline},
+      accountid = #{accountid},
+      modify_time = now()
+	  where 
+	  id = #{id} 
+	</update>
+	
+	<update id="updateOnlineLogined">
+	  update  tbl_wx_accountinfo
+      set 
+      isonline = #{isonline},
+      islogined = #{islogined},
+      accountid = #{accountid},
+      modify_time = now()
+	  where 
+	  id = #{id} 
+	</update>
+	 
+  
+	
+	<update id="updateAccountidOffline">
+	  update  tbl_wx_accountinfo
+      set 
+      islogined = 1,
+      accountid = #{accountid},
+      modify_time = now()
+	  where 
+	  id = #{id} 
+	</update>
+	 
+	
+	  
+</mapper>

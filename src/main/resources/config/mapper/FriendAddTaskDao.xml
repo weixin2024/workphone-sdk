@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jubotech.business.web.dao.FriendAddTaskDao">
+     
+    <resultMap type="com.jubotech.business.web.domain.FriendAddTask" id="resultMap">
+        <id column="id" property="id"/>
+        <result  column="accountid" property="accountid"/>
+        <result  column="cid" property="cid"/>
+        <result  column="state" property="state"/>
+        <result  column="execute_time" property="execute_time"/>
+        <result  column="between_time" property="between_time"/>
+        <result  column="wechatid" property="wechatid"/>
+        <result  column="message" property="message"/>
+        <result  column="totalsize" property="totalsize"/>
+        <result  column="doingsize" property="doingsize"/>
+        <result  column="successsize" property="successsize"/>
+        <result  column="sayhellosize" property="sayhellosize"/>
+        <result  column="create_time" property="createTime"/>
+    </resultMap>
+    
+    
+    <select id="queryFriendAddTaskByAccountId" resultMap="resultMap">
+         select *
+         from tbl_wx_friendaddtask 
+         where   accountid = #{accountid}
+         <if test="state != null ">
+           and  state=#{state}
+         </if>
+         order by  create_time desc  
+         <if test="page!= null ">
+			<if test="page.limit != null">
+				LIMIT #{page.limit}
+			</if>
+			<if test="page.offset != null">
+				OFFSET #{page.offset}
+			</if>
+		 </if>
+	</select>
+    
+
+	
+	<select id="queryFriendAddTaskCountByAccountId" resultType="java.lang.Integer">
+         select  count(1) 
+         from tbl_wx_friendaddtask
+         where accountid = #{accountid} 
+         <if test="state != null ">
+           and  state=#{state}
+         </if>
+	</select>
+	  
+	<select id="findFriendAddTaskByid" resultType="com.jubotech.business.web.domain.FriendAddTask">
+         select  * 
+         from tbl_wx_friendaddtask
+         where  id = #{id}
+	</select>
+	
+	 
+  
+	<insert id="insert"   useGeneratedKeys="true" keyProperty="id" >
+	  insert into tbl_wx_friendaddtask(accountid,cid,state,execute_time,between_time,wechatid,message,totalsize,doingsize,successsize,sayhellosize,create_time)
+	  values(#{accountid},#{cid},#{state},#{execute_time},#{between_time},#{wechatid},#{message},#{totalsize},#{doingsize},#{successsize},#{sayhellosize},now()) 
+	</insert>   
+	
+	<update id="update">
+	  update  tbl_wx_friendaddtask
+      set 
+      state = #{state},
+      doingsize = #{doingsize},
+      successsize = #{successsize},
+      execute_time = #{execute_time}
+	  where 
+	  id = #{id} 
+	</update>
+	
+	<delete id="delete">
+	   delete from  tbl_wx_friendaddtask where  id = #{id}
+	</delete>
+	 	 
+	<select id="findFriendAddTaskByTime" resultMap="resultMap" >
+	  <![CDATA[ 
+	   select * from  tbl_wx_friendaddtask  where state =1 and  execute_time <= #{execute_time}
+	  ]]>
+	</select>
+
+</mapper>

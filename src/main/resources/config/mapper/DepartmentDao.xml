@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jubotech.business.web.dao.DepartmentDao">
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
+ 
+    <resultMap type="com.jubotech.business.web.domain.DepartmentInfo" id="resultMap">
+        <id column="id" property="id"/>
+        <result  column="pid" property="pid"/>
+        <result  column="cid" property="cid"/>
+        <result  column="name" property="name"/>
+        <result  column="pname" property="pname"/>
+        <result  column="description" property="description"/>
+        <result  column="create_time" property="create_time"/>
+    </resultMap>
+   
+   
+   <select id="getAllDepartmentInfoByCid" resultMap="resultMap">
+         select * 
+         from tbl_departmentinfo
+         where  1=1  and cid = #{cid} 
+         order by create_time asc  
+	</select>
+    
+	<select id="queryDepartmentInfo" resultMap="resultMap">
+         select  t1.*,t2.pname    from  tbl_departmentinfo  t1
+         LEFT JOIN  (select id , name  pname from tbl_departmentinfo) t2 on  t1.pid = t2.id
+         where  1=1  and t1.cid = #{cid} 
+         <if test="name != null and name != '' ">
+           and t1.name LIKE CONCAT('%',#{name},'%')
+         </if>
+          order by t1.create_time asc  
+         <if test="page!= null ">
+			<if test="page.limit != null">
+				LIMIT #{page.limit}
+			</if>
+			<if test="page.offset != null">
+				OFFSET #{page.offset}
+			</if>
+		 </if>
+	</select>
+	
+	<select id="queryDepartmentInfoCount" resultType="java.lang.Integer">
+         select  count(1) 
+         from tbl_departmentinfo
+         where 1=1 and cid = #{cid} 
+         <if test="name != null and name != '' ">
+           and  name LIKE CONCAT('%',#{name},'%')
+         </if>
+          
+	</select>
+	  
+	<select id="findDepartmentInfoByid" resultType="com.jubotech.business.web.domain.DepartmentInfo">
+         select  * 
+         from tbl_departmentinfo
+         where  id = #{id}
+	</select>
+	 
+	<insert id="insert"  useGeneratedKeys="true" keyProperty="id">
+	  insert into tbl_departmentinfo(pid,cid,name,description,create_time)
+	  values(#{pid},#{cid},#{name},#{description},now()) 
+	</insert>   
+	 
+	<update id="update">
+	  update  tbl_departmentinfo
+      set 
+      pid = #{pid},
+      name = #{name},
+      description = #{description},
+      create_time = now()
+	  where 
+	  id = #{id} 
+	</update>
+	
+	<delete id="delete">
+	   delete from  tbl_departmentinfo where  id = #{id}
+	</delete>
+	
+  
+
+</mapper>

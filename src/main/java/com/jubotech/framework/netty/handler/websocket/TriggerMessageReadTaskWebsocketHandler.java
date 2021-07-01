@@ -1,0 +1,46 @@
+package com.jubotech.framework.netty.handler.websocket;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import com.google.protobuf.util.JsonFormat;
+import com.jubotech.framework.netty.async.AsyncTaskService;
+import com.jubotech.framework.netty.common.Constant;
+import com.jubotech.framework.netty.utils.MessageUtil;
+
+import Jubo.JuLiao.IM.Wx.Proto.TransportMessageOuterClass.EnumErrorCode;
+import Jubo.JuLiao.IM.Wx.Proto.TransportMessageOuterClass.EnumMsgType;
+import Jubo.JuLiao.IM.Wx.Proto.TransportMessageOuterClass.TransportMessage;
+import Jubo.JuLiao.IM.Wx.Proto.TriggerMessageReadTask.TriggerMessageReadTaskMessage;
+import io.netty.channel.ChannelHandlerContext;
+
+@Service
+public class TriggerMessageReadTaskWebsocketHandler{
+	private  final Logger log = LoggerFactory.getLogger(getClass());
+	@Autowired
+	private AsyncTaskService asyncTaskService;
+	/**
+	 * 通知手机将某个聊天窗口置为已读---pc端经过服务端转发给手机端
+	 * @author wechatno:tangjinjinwx
+	 * @param ctx
+	 * @param vo
+	 */
+	@Async
+    public  void handleMsg(ChannelHandlerContext ctx,TransportMessage vo, String contentJsonStr) {
+        try {
+        	log.debug(contentJsonStr);
+        	TriggerMessageReadTaskMessage.Builder bd = TriggerMessageReadTaskMessage.newBuilder();
+        	JsonFormat.parser().merge(contentJsonStr, bd);
+        	TriggerMessageReadTaskMessage req = bd.build();
+        	//TriggerMessageReadTaskMessage req = vo.getContent().unpack(TriggerMessageReadTaskMessage.class);
+        	//将消息转发送给手机客户端
+        	asyncTaskService.msgSend2Phone(ctx, req.getWeChatId(), EnumMsgType.TriggerMessageReadTask, vo, req);
+        } catch (Exception e) {
+            e.printStackTrace();
+            MessageUtil.sendJsonErrMsg(ctx, EnumErrorCode.InvalidParam, Constant.ERROR_MSG_DECODFAIL);
+        }
+    }
+}

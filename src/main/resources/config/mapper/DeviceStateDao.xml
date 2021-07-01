@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jubotech.business.web.dao.DeviceStateDao">
+    <resultMap type="com.jubotech.business.web.domain.DeviceStateInfo" id="resultMap">
+        <id column="id" property="id"/>
+        <result  column="wechatid" property="wechatid"/>
+        <result  column="wechatno" property="wechatno"/>
+        <result  column="wechatnick" property="wechatnick"/>
+        <result  column="isonline" property="isonline"/>
+        <result  column="islogined" property="islogined"/>
+        <result  column="cid" property="cid"/>
+        <result  column="cname" property="cname"/>
+        <result  column="deviceid" property="deviceid"/>
+        <result  column="accountid" property="accountid"/>
+        <result  column="accountname" property="accountname"/>
+        <result  column="did" property="did"/>
+        <result  column="dname" property="dname"/>
+        <result  column="devnickname" property="devnickname"/>
+        <result  column="brand" property="brand"/>
+        <result  column="module" property="module"/>
+        <result  column="login_time" property="login_time"/>
+        <result  column="create_time" property="create_time"/>
+    </resultMap>
+    
+	<select id="queryDeviceStateInfo" resultMap="resultMap">
+         select  t1.id,t1.wechatid,t1.wechatno,t1.wechatnick,t1.isonline,t1.islogined,t1.deviceid,t1.cid,t1.accountid,t1.login_time,t2.suppliername as cname,t3.account as accountname,t4.name as dname
+		 from 
+			tbl_wx_accountinfo  t1
+			LEFT JOIN  tbl_customerinfo t2  on t1.cid = t2.id
+			LEFT JOIN  tbl_accountinfo  t3  on t1.accountid = t3.id
+			LEFT JOIN  tbl_departmentinfo t4  on t1.did = t4.id 
+         where   1=1 
+         <if test="info.wechatid != null and info.wechatid != '' ">
+           and  t1.wechatid=#{info.wechatid}
+         </if>
+         <if test="info.deviceid != null and info.deviceid != '' ">
+           and  t1.deviceid=#{info.deviceid}
+         </if>
+         <if test="info.isonline != null ">
+           and  t1.isonline=#{info.isonline}
+         </if>
+         <if test="info.islogined != null ">
+           and  t1.islogined=#{info.islogined}
+         </if>
+         <if test="info.cid != null ">
+           and  t1.cid=#{info.cid}
+         </if>
+         <if test="info.did != null ">
+           and  t1.did=#{info.did}
+         </if>
+         <if test="info.accountid != null ">
+           and  t1.accountid=#{info.accountid}
+         </if>
+         order by  t1.create_time desc  
+         <if test="page!= null ">
+			<if test="page.limit != null">
+				LIMIT #{page.limit}
+			</if>
+			<if test="page.offset != null">
+				OFFSET #{page.offset}
+			</if>
+		 </if>
+	</select>
+	
+	<select id="queryDeviceStateInfoCount" resultType="java.lang.Integer">
+         select  count(1) 
+         from tbl_wx_accountinfo
+         where   1=1 
+         <if test="info.wechatid != null and info.wechatid != '' ">
+           and  wechatid=#{info.wechatid}
+         </if>
+         <if test="info.deviceid != null and info.deviceid != '' ">
+           and  deviceid=#{info.deviceid}
+         </if>
+         <if test="info.isonline != null ">
+           and  isonline=#{info.isonline}
+         </if>
+         <if test="info.islogined != null ">
+           and  islogined=#{info.islogined}
+         </if>
+         <if test="info.cid != null ">
+           and  cid=#{info.cid}
+         </if>
+         <if test="info.did != null ">
+           and  did=#{info.did}
+         </if>
+         <if test="info.accountid != null ">
+           and  accountid=#{info.accountid}
+         </if>
+	</select>
+	
+	<select id="findDeviceStateInfoByid" resultType="com.jubotech.business.web.domain.DeviceStateInfo">
+         select  * 
+         from tbl_wx_accountinfo
+         where  id = #{id}
+	</select>
+	
+	  
+	<select id="getPhoneAllCountByCid" resultType="java.lang.Integer">
+         select  count(1) 
+         from tbl_wx_accountinfo
+         where  cid=#{cid} 
+	</select>
+	 
+	
+	<insert id="insert">
+	  insert into tbl_wx_accountinfo(deviceid,cid,did,accountid,devnickname,brand,module,create_time)
+	  values(#{deviceid},#{cid},#{did},#{accountid},#{devnickname},#{brand},#{module},now()) 
+	</insert>   
+	
+	<update id="update">
+	  update  tbl_wx_accountinfo
+      set 
+      did = #{did},
+      accountid = #{accountid},
+      deviceid = #{deviceid},
+      devnickname = #{devnickname},
+      module = #{module},
+      brand = #{brand}
+	  where 
+	  id = #{id} 
+	</update>
+ 
+	
+	<update id="binding">
+	  update  tbl_wx_accountinfo
+      set 
+      accountid = #{accountid},
+      did = #{did}
+	  where 
+	  id = #{id} 
+	</update>	
+	
+	<update id="updateLoginTime">
+	  update  tbl_wx_accountinfo
+      set 
+      login_time = now()
+	  where 
+	  deviceid = #{deviceid} 
+	</update>
+
+</mapper>

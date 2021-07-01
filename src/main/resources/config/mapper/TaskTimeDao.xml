@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jubotech.business.web.dao.TaskTimeDao">
+     
+    <resultMap type="com.jubotech.business.web.domain.TaskTimeInfo" id="resultMap">
+        <id column="id" property="id"/>
+        <result  column="accountid" property="accountid"/>
+        <result  column="cid" property="cid"/>
+        <result  column="did" property="did"/>
+        <result  column="tasktype" property="tasktype"/>
+        <result  column="state" property="state"/>
+        <result  column="execute_time" property="execute_time"/>
+        <result  column="restype" property="restype"/>
+        <result  column="content" property="content"/>
+        <result  column="comment" property="comment"/>
+        <result  column="attachtype" property="attachtype"/>
+        <result  column="attachtcontent" property="attachtcontent"/>
+        <result  column="whoinvisible" property="whoinvisible"/>
+        <result  column="results" property="results"/>
+        <result  column="update_time" property="update_time"/>
+        <result  column="create_time" property="createTime"/>
+        <result  column="dname" property="dname"/>
+    </resultMap>
+    
+    
+    <select id="queryTaskTimeInfoByAccountId" resultMap="resultMap">
+         select t1.* ,t2.name as dname
+         from tbl_timetask  t1 
+         left join  tbl_departmentinfo t2  on t1.did = t2.id 
+         where   t1.accountid = #{accountid}
+         <if test="tasktype != null ">
+           and  t1.tasktype=#{tasktype}
+         </if>
+         <if test="state != null ">
+           and  t1.state=#{state}
+         </if>
+         order by  t1.create_time desc  
+         <if test="page!= null ">
+			<if test="page.limit != null">
+				LIMIT #{page.limit}
+			</if>
+			<if test="page.offset != null">
+				OFFSET #{page.offset}
+			</if>
+		 </if>
+	</select>
+    
+	<select id="queryTaskTimeInfo" resultMap="resultMap">
+         select t1.* ,t2.name as dname
+         from tbl_timetask  t1 
+         left join  tbl_departmentinfo t2  on t1.did = t2.id 
+         where    t1.cid=#{cid}
+         <if test="did != null ">
+           and  t1.did=#{did}
+         </if> 
+         <if test="tasktype != null ">
+           and  t1.tasktype=#{tasktype}
+         </if>
+         <if test="state != null ">
+           and  t1.state=#{state}
+         </if>
+         order by  t1.create_time desc  
+         <if test="page!= null ">
+			<if test="page.limit != null">
+				LIMIT #{page.limit}
+			</if>
+			<if test="page.offset != null">
+				OFFSET #{page.offset}
+			</if>
+		 </if>
+	</select>
+	
+	<select id="queryTaskTimeInfoCount" resultType="java.lang.Integer">
+         select  count(1) 
+         from tbl_timetask
+         where cid=#{cid}  
+         <if test="did != null ">
+           and  did=#{did}
+         </if> 
+         <if test="tasktype != null ">
+           and  tasktype=#{tasktype}
+         </if>
+         <if test="state != null ">
+           and  state=#{state}
+         </if>
+	</select>
+	  
+	<select id="findTaskTimeInfoByid" resultType="com.jubotech.business.web.domain.TaskTimeInfo">
+         select  * 
+         from tbl_timetask
+         where  id = #{id}
+	</select>
+	 
+  
+	<insert id="insert"   useGeneratedKeys="true" keyProperty="id" >
+	  insert into tbl_timetask(accountid,cid,did,tasktype,state,execute_time,restype,content,comment,attachtype,attachtcontent,whoinvisible,create_time)
+	  values(#{accountid},#{cid},#{did},#{tasktype},#{state},#{execute_time},#{restype},#{content},#{comment},#{attachtype},#{attachtcontent},#{whoinvisible},now()) 
+	</insert>   
+	
+	<update id="update">
+	  update  tbl_timetask
+      set 
+      state = #{state},
+      execute_time = #{execute_time},
+      content = #{content},
+      comment = #{comment},
+      attachtype = #{attachtype},
+      attachtcontent = #{attachtcontent},
+      whoinvisible = #{whoinvisible},
+      update_time = now()
+	  where 
+	  id = #{id} 
+	</update>
+	
+	<delete id="delete">
+	   delete from  tbl_timetask where  id = #{id}
+	</delete>
+	 	
+	
+	<update id="updateState">
+	  update  tbl_timetask
+      set 
+      state = #{state},
+      update_time = now()
+	  where 
+	  id = #{id} 
+	</update>
+	
+	<select id="findTaskTimeByTime" resultMap="resultMap" >
+	  <![CDATA[ 
+	   select * from  tbl_timetask  where state =1 and  execute_time <= #{execute_time}
+	  ]]>
+	</select>
+
+</mapper>

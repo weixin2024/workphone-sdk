@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jubotech.business.web.dao.CommontermTypeDao">
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
+ 
+    <resultMap type="com.jubotech.business.web.domain.CommontermType" id="resultMap">
+        <id column="id" property="id"/>
+        <result  column="cid" property="cid"/>
+        <result  column="did" property="did"/>
+        <result  column="name" property="name"/>
+        <result  column="dname" property="dname"/>
+        <result  column="create_time" property="create_time"/>
+    </resultMap>
+     
+    <select id="getAllCommontermTypeByCid" resultMap="resultMap">
+         select * 
+         from tbl_commontermtype where 1=1 
+         <if test="cid != null">
+           and cid = #{cid}
+         </if>
+          order by create_time asc  
+	</select>
+    
+	<select id="queryCommontermType" resultMap="resultMap">
+         select t1.* , t2.dname 
+         from tbl_commontermtype  t1
+         LEFT JOIN  (select id , name  dname from tbl_departmentinfo) t2 on  t1.did = t2.id
+         where    t1.cid = #{cid} 
+         <if test="name != null and name != '' ">
+           and t1.name LIKE CONCAT('%',#{name},'%')
+         </if>
+         <if test="did != null">
+           and t1.did = #{did}
+         </if>
+          order by t1.create_time asc  
+         <if test="page!= null ">
+			<if test="page.limit != null">
+				LIMIT #{page.limit}
+			</if>
+			<if test="page.offset != null">
+				OFFSET #{page.offset}
+			</if>
+		 </if>
+	</select>
+	
+	<select id="queryCommontermTypeCount" resultType="java.lang.Integer">
+         select  count(1) from tbl_commontermtype
+         where    cid = #{cid} 
+         <if test="name != null and name != '' ">
+           and  name LIKE CONCAT('%',#{name},'%')
+         </if>
+         <if test="did != null">
+           and did = #{did}
+         </if>
+          
+	</select>
+	  
+	<select id="findCommontermTypeByid" resultType="com.jubotech.business.web.domain.CommontermType">
+         select  * 
+         from tbl_commontermtype
+         where  id = #{id}
+	</select>
+	  
+	<insert id="insert"  useGeneratedKeys="true" keyProperty="id">
+	  insert into tbl_commontermtype(cid,did,name,create_time)
+	  values(#{cid},#{did},#{name},now()) 
+	</insert>   
+	 
+	<update id="update">
+	  update  tbl_commontermtype
+      set 
+      did = #{did},
+      name = #{name},
+      create_time = now()
+	  where 
+	  id = #{id} 
+	</update>
+	
+	<delete id="delete">
+	   delete from  tbl_commontermtype where  id = #{id}
+	</delete>
+	 
+</mapper>
